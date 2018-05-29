@@ -21,7 +21,7 @@ function readProducts() {
     if (err) throw err;
     for (i = 0; i < res.length; i++) {
       console.log("----------------------------------");
-      console.log("Item ID: " + res[i].item_id);
+      console.log("Item ID: " + res[i].id);
       console.log("Product Name: " + res[i].proname);
       console.log("Price of product: $" + res[i].price);
       console.log("----------------------------------");
@@ -34,7 +34,7 @@ function start() {
   inquirer
     .prompt([
       {
-        message: "Which item would you like to buy?",
+        message: "Which item would you like to buy? (use ID)",
         type: "input",
         name: "productID"
       },
@@ -50,6 +50,9 @@ function start() {
       purchase(productID, purchaseNum);
     });
 }
+
+start();
+
 function purchase(ID, NUM) {
   var flag = false;
   connection.query("SELECT * FROM products", function(err, res) {
@@ -84,8 +87,8 @@ function updateProduct(ID, NUM) {
 
 start();
 
-connection.connect(function(err) {
-  if (err) throw err;
-  console.log("connected as id " + connection.threadId);
-  connection.end();
-});
+// connection.connect(function(err) {
+//   if (err) throw err;
+//   console.log("connected as id " + connection.threadId);
+//   connection.end();
+// });
