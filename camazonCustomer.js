@@ -28,9 +28,9 @@ function readProducts() {
     }
   });
 }
-readProducts();
 
 function start() {
+  readProducts();
   inquirer
     .prompt([
       {
@@ -85,7 +85,7 @@ function updateProduct(ID, NUM) {
   );
 }
 
-start();
+
 
 // connection.connect(function(err) {
 //   if (err) throw err;
