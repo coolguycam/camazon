@@ -14,29 +14,75 @@ var connection = mysql.createConnection({
   database: "cambo_DB"
 });
 
+// Shows all available products
+function readProducts() {
+  console.log("Selecting all items...\n");
+  connection.query("SELECT * FROM products", function(err, res) {
+    if (err) throw err;
+    for (i = 0; i < res.length; i++) {
+      console.log("----------------------------------");
+      console.log("Item ID: " + res[i].item_id);
+      console.log("Product Name: " + res[i].proname);
+      console.log("Price of product: $" + res[i].price);
+      console.log("----------------------------------");
+    }
+  });
+}
+readProducts();
+
 function start() {
   inquirer
-    .prompt({
-      name: "choice",
-      type: "rawlist",
-      choices: function() {
-        var choiceArray = [];
-        for (var i = 0; i < results.length; i++) {
-          choiceArray.push(results[i].item_name);
-        }
-        return choiceArray;
+    .prompt([
+      {
+        message: "Which item would you like to buy?",
+        type: "input",
+        name: "productID"
       },
-      message: "What auction would you like to place a bid in?"
-    })
-    .then(function(answer) {
-      // based on their answer, either call the bid or the post functions
-      if (answer.postOrBid.toUpperCase() === "POST") {
-        postAuction();
-      } else {
-        bidAuction();
+      {
+        message: "How many would you like to purchase?",
+        type: "input",
+        name: "purchaseNum"
       }
+    ])
+    .then(function(answers) {
+      var productID = answers.productID;
+      var purchaseNum = parseInt(answers.purchaseNum);
+      purchase(productID, purchaseNum);
     });
 }
+function purchase(ID, NUM) {
+  var flag = false;
+  connection.query("SELECT * FROM products", function(err, res) {
+    if (err) throw err;
+    console.log(parseInt(res[0].quantity));
+    if (NUM > parseInt(res[ID - 1].quantity)) {
+      console.log("No more in stock!");
+    } else {
+      updateProduct(ID, NUM);
+      console.log("Product Stock Updated");
+      flag = true;
+    }
+  });
+  if (flag) {
+    start();
+  }
+}
+
+function updateProduct(ID, NUM) {
+  connection.query(
+    "UPDATE products SET quantity WHERE " + ID,
+    [
+      {
+        quantity: quantity - NUM
+      }
+    ],
+    function(err, res) {
+      connection.end();
+    }
+  );
+}
+
+start();
 
 connection.connect(function(err) {
   if (err) throw err;
