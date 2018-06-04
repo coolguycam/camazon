@@ -46,8 +46,8 @@ function start() {
     ])
     .then(function(answers) {
       var productID = answers.productID;
-      var purchaseNum = parseInt(answers.purchaseNum);
-      purchase(productID, purchaseNum);
+      var quantity = parseInt(answers.purchaseNum);
+      purchase(productID, quantity);
     });
 }
 
@@ -57,7 +57,7 @@ function purchase(ID, NUM) {
   var flag = false;
   connection.query("SELECT * FROM products", function(err, res) {
     if (err) throw err;
-    console.log(parseInt(res[0].quantity));
+    // console.log(parseInt(res[0].quantity));
     if (NUM > parseInt(res[ID - 1].quantity)) {
       console.log("No more in stock!");
     } else {
@@ -73,19 +73,12 @@ function purchase(ID, NUM) {
 
 function updateProduct(ID, NUM) {
   connection.query(
-    "UPDATE products SET quantity WHERE " + ID,
-    [
-      {
-        quantity: quantity - NUM
-      }
-    ],
+    "UPDATE products SET quantity = quantity - " + NUM + " WHERE " + ID,
     function(err, res) {
       connection.end();
     }
   );
 }
-
-
 
 // connection.connect(function(err) {
 //   if (err) throw err;
